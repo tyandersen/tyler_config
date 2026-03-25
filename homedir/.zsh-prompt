@@ -15,7 +15,18 @@ precmd() {
   local path_display=""
   local full_path="${PWD/#$HOME/~}"
   local warn_color="%F{196}"
+  local git_part="$vcs_info_msg_0_"
 
+
+  if [[ -n $git_part ]]; then
+    local git_branch
+    git_branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null)
+    if [[ -z $git_branch ]]; then
+      local git_rev
+      git_rev=$(git rev-parse --short HEAD 2>/dev/null)
+      git_part=" ${warn_color}(DETACHED${git_rev:+ @ ${git_rev}})${reset}"
+    fi
+  fi
 
   # exit code on left, only when non-zero
   if (( last_status != 0 )); then
@@ -52,7 +63,5 @@ precmd() {
   local fill=${(pl.$fill_len..-.)}
 
   PROMPT="${exit_part}${line_color}${fill}${reset}${right}
-%F{11}${path_display}%f%F{8}${vcs_info_msg_0_}%f %# "
+%F{11}${path_display}%f%F{8}${git_part}%f %# "
 }
-
-
