@@ -3,14 +3,31 @@
 # DIFFTOOL can be opendiff, diff, or any other 2-path diff command.
 DIFFTOOL=opendiff
 
-if [[ ${1:-} == '-h' || ${1:-} == '--help' ]]; then
-  print 'Sync repo-managed config files to their local machine paths.'
-  print
-  print 'The script compares each file under repo subdirectories, shows a diff,'
-  print 'prompts before overwriting the local copy, and summarizes any files'
-  print 'left out of sync with the repo.'
-  exit 0
-fi
+while (( $# > 0 )); do
+  case $1 in
+    -d|--diff)
+      DIFFTOOL=diff
+      ;;
+    -h|--help)
+      print 'Sync repo-managed config files to their local machine paths.'
+      print
+      print 'Options:'
+      print '  -d, --diff  use terminal diff instead of opendiff/FileMerge'
+      print '  -h, --help  show this help text'
+      print
+      print 'The script compares each file under repo subdirectories, shows a diff,'
+      print 'prompts before overwriting the local copy, and summarizes any files'
+      print 'left out of sync with the repo.'
+      exit 0
+      ;;
+    *)
+      print "Unknown option: $1"
+      print "Try ./sync_from_repo.zsh --help"
+      exit 1
+      ;;
+  esac
+  shift
+done
 
 setopt null_glob
 
