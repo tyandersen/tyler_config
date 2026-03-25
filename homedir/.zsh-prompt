@@ -1,0 +1,58 @@
+autoload -Uz vcs_info
+setopt prompt_subst
+
+zstyle ':vcs_info:git:*' formats ' (%b)'
+
+precmd() {
+  local last_status=$?
+  vcs_info
+
+  local exit_part=""
+  local ctx=""
+  local user_part=""
+  local line_color="%F{13}"   # purple
+  local reset="%f"
+  local path_display=""
+  local full_path="${PWD/#$HOME/~}"
+  local warn_color="%F{196}"
+
+
+  # exit code on left, only when non-zero
+  if (( last_status != 0 )); then
+    exit_part="${warn_color}[${last_status}]${reset} "
+  fi
+
+  # SSH marker
+  if [[ -n $SSH_CONNECTION ]]; then
+    ctx="${warn_color}[SSH]%f "
+  fi
+
+  # username color
+  if [[ $EUID -eq 0 ]]; then
+    user_part="${warn_color}%n${line_color}"
+  elif [[ $USER == tyler ]]; then
+    user_part="${line_color}%n"
+  else
+    user_part="%n"
+  fi
+  user_part="${user_part}${line_color}@%m"
+
+
+  # path rule:
+  # full ~/relative path if under 40 chars, else basename only
+  if (( ${#full_path} < 40 )); then
+    path_display="$full_path"
+  else
+    path_display="${PWD:t}"
+  fi
+
+  local right="${ctx}${user_part}"
+  local fill_len=$(( COLUMNS - ${#${(%)exit_part}} - ${#${(%)right}} ))
+  (( fill_len < 1 )) && fill_len=1
+  local fill=${(pl.$fill_len..-.)}
+
+  PROMPT="${exit_part}${line_color}${fill}${reset}${right}
+%F{11}${path_display}%f%F{8}${vcs_info_msg_0_}%f %# "
+}
+
+
