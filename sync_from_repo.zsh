@@ -71,13 +71,13 @@ show_diff() {
 
   case $DIFFTOOL in
     opendiff)
-      opendiff -wait "$repo_path" "$local_path"
+      opendiff -wait "$local_path" "$repo_path"
       ;;
     diff)
-      diff --color=auto -y --suppress-common-lines -W "${COLUMNS:-160}" "$repo_path" "$local_path"
+      diff --color=auto -y --suppress-common-lines -W "${COLUMNS:-160}" "$local_path" "$repo_path"
       ;;
     *)
-      "$DIFFTOOL" "$repo_path" "$local_path"
+      "$DIFFTOOL" "$local_path" "$repo_path"
       ;;
   esac
 }
