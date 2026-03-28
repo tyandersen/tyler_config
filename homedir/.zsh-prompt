@@ -7,14 +7,19 @@ precmd() {
   local last_status=$?
   vcs_info
 
+  # ── color scheme ──
+  local line_color="%F{13}"    # purple  – fill line, username
+  local warn_color="%F{196}"   # red     – exit code, detached HEAD
+  local path_color="%F{11}"    # yellow  – working directory
+  local git_color="%F{8}"      # gray    – git branch
+  local venv_color="%F{12}"    # blue    – virtual-env marker
+  local reset="%f"
+
   local exit_part=""
   local ctx=""
   local user_part=""
-  local line_color="%F{13}"   # purple
-  local reset="%f"
   local path_display=""
   local full_path="${PWD/#$HOME/~}"
-  local warn_color="%F{196}"
   local git_part="$vcs_info_msg_0_"
 
 
@@ -62,6 +67,11 @@ precmd() {
   (( fill_len < 1 )) && fill_len=1
   local fill=${(pl.$fill_len..-.)}
 
+  local venv_part=""
+  if [[ -n $VIRTUAL_ENV ]]; then
+    venv_part="${venv_color}(${VIRTUAL_ENV:t})${reset} "
+  fi
+
   PROMPT="${exit_part}${line_color}${fill}${reset}${right}
-%F{11}${path_display}%f%F{8}${git_part}%f %# "
+${venv_part}${path_color}${path_display}${reset}${git_color}${git_part}${reset} %# "
 }
