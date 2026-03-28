@@ -14,3 +14,6 @@ alias ls='ls -G'
 alias java_jre='/Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java'
 
 alias grep='grep --color'
+
+# Claude is here
+export PATH="$HOME/.local/bin:$PATH"
