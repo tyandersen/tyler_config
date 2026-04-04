@@ -15,5 +15,15 @@ alias java_jre='/Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin/Contents/Hom
 
 alias grep='grep --color'
 
+# SSH agent: start if needed, keep symlink stable for tmux
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval $(ssh-agent -s) > /dev/null
+    ssh-add 2> /dev/null
+fi
+if [ -n "$SSH_AUTH_SOCK" ] && [ "$SSH_AUTH_SOCK" != "$HOME/.ssh/auth_sock" ]; then
+    ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/auth_sock"
+fi
+export SSH_AUTH_SOCK="$HOME/.ssh/auth_sock"
+
 # Claude is here
 export PATH="$HOME/.local/bin:$PATH"
